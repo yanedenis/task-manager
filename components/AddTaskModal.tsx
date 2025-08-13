@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { IconButton, Portal, TextInput, Modal, Button, HelperText, Text } from 'react-native-paper'
+import { IconButton, Portal, TextInput, Modal, Button, Text } from 'react-native-paper'
+import Toast from 'react-native-toast-message';
+import { colors } from '@/constants/colors';
 
 type Props = {
   visibility: boolean,
@@ -13,24 +15,20 @@ export default function AddTaskModal({ visibility, addTask, closeModal }: Props)
   const [descriptionInput, setDescriptionInput] = useState<string>('');
   const [locationInput, setLocationInput] = useState<string>('');
 
-  // ERROR
-  const [titleError, setTitleError] = useState<boolean>(false);
-  const [descriptionError, setDescriptionError] = useState<boolean>(false);
-
   const handleSaveBtn = () => {
     const d = new Date()
 
-    if (!titleInput) {
-      setTitleError(true)
-      return
-    }
-    if (!descriptionInput) {
-      setDescriptionError(true)
+    if (!titleInput && !descriptionInput) {
+      Toast.show({
+        type: "error",
+        text1: "Fill all fields",
+        text1Style: {
+          fontSize: 18,
+        }
+      })
       return
     }
 
-    setTitleError(false)
-    setDescriptionError(false)
     const newTask = {
       title: titleInput,
       description: descriptionInput,
@@ -40,6 +38,7 @@ export default function AddTaskModal({ visibility, addTask, closeModal }: Props)
     addTask(newTask)
     setTitleInput('')
     setDescriptionInput('')
+    setLocationInput('')
     closeModal()
   }
 
@@ -59,25 +58,11 @@ export default function AddTaskModal({ visibility, addTask, closeModal }: Props)
               mode='outlined'
               onChangeText={setTitleInput}
               value={titleInput} />
-            <HelperText
-              type='error'
-              visible={titleError}
-              padding='none'>
-              Title is empty
-            </HelperText>
-
             <TextInput
               label="Task description"
               mode='outlined'
               onChangeText={setDescriptionInput}
               value={descriptionInput} />
-            <HelperText
-              type='error'
-              visible={descriptionError}
-              padding='none'>
-              Description is empty
-            </HelperText>
-
             <TextInput
               label="Location"
               mode='outlined'
@@ -88,7 +73,9 @@ export default function AddTaskModal({ visibility, addTask, closeModal }: Props)
             mode='contained'
             style={styles.saveBtn}
             labelStyle={{ fontSize: 18 }}
-            onPress={handleSaveBtn}>
+            onPress={handleSaveBtn}
+            textColor={colors.textDark}
+            hitSlop={50}>
             Save
           </Button>
         </View>
@@ -99,10 +86,10 @@ export default function AddTaskModal({ visibility, addTask, closeModal }: Props)
 
 const styles = StyleSheet.create({
   modal: {
-    width: "80%",
+    width: "90%",
     height: "auto",
     alignSelf: "center",
-    backgroundColor: "white",
+    backgroundColor: colors.backgroundLightened,
     marginBlock: "auto",
     paddingInline: 14,
     paddingBlock: 12,
@@ -119,5 +106,6 @@ const styles = StyleSheet.create({
   },
   saveBtn: {
     alignSelf: "flex-end",
+    borderRadius: 8
   },
 })

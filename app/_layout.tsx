@@ -1,31 +1,27 @@
+import { colors } from "@/constants/colors";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { PaperProvider, DefaultTheme } from "react-native-paper";
+import { PaperProvider } from "react-native-paper";
+import Toast from 'react-native-toast-message';
 
 export default function RootLayout() {
-  const lightTheme = {
-    ...DefaultTheme,
-    colors: {
-      ...DefaultTheme.colors,
-      background: 'white',
-      surface: 'white',
-      primary: '#6200ee',
-      text: 'black',
-      placeholder: '#777'
-    },
-  };
-
   return (
-    <PaperProvider theme={lightTheme}>
+    <PaperProvider>
       <StatusBar style="auto" />
       <Stack>
         <Stack.Screen
           name="index"
           options={{
-            headerTitle: "Task manager"
+            headerTitle: "Task manager",
+            headerStyle: {
+              backgroundColor: colors.backgroundLightened,
+            },
+            headerTintColor: colors.textLight,
+            headerShadowVisible: false,
           }}
         />
       </Stack>
+      <Toast />
     </PaperProvider>
   );
 }

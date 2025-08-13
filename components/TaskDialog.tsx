@@ -1,31 +1,50 @@
-import { todoTaskType } from '@/types/TodoTaskType';
 import React from 'react'
-import { ScrollView,  View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { Dialog, Portal, Text } from 'react-native-paper'
+import { TodoTaskType } from '@/types/TodoTaskType';
+import { colors } from '@/constants/colors';
 
 type Props = {
   visibility: boolean,
   onClose: () => void,
-  task: todoTaskType | null,
+  task: TodoTaskType | null,
 }
 
 export default function TaskDialog({ visibility, onClose, task }: Props) {
   return (
     <Portal>
-      <Dialog visible={visibility} onDismiss={onClose} style={{ width: "90%", maxHeight: "70%", alignSelf: "center" }}>
+      <Dialog visible={visibility} onDismiss={onClose} style={styles.dialog}>
         <Dialog.Title>
-          <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
-            <Text>{task?.title}</Text>
-            <Text>{task?.status}</Text>
+          <View style={styles.title}>
+            <Text style={{color: colors.textDark}}>{task?.title}</Text>
+            <Text style={{color: colors.textDark}}>{task?.status}</Text>
           </View>
         </Dialog.Title>
-        <Dialog.ScrollArea>
+        <Dialog.Content>
           <ScrollView>
-            <Text variant='bodyLarge'>{task?.description}</Text>
+            <Text variant='bodyLarge' style={{color: colors.textDark}}>{task?.description}</Text>
           </ScrollView>
-          <Text style={{textAlign: "right"}} variant='labelLarge'>{task?.date}</Text>
-        </Dialog.ScrollArea>
+          <Text style={{ textAlign: "right", color: colors.textDark }} variant='labelLarge'>
+            {task?.location}<br />
+            {task?.date}
+          </Text>
+        </Dialog.Content>
       </Dialog>
     </Portal>
   )
 }
+
+const styles = StyleSheet.create({
+  dialog: {
+    width: "90%",
+    maxHeight: "70%",
+    alignSelf: "center",
+    backgroundColor: colors.primaryTinted,
+    borderRadius: 10,
+  },
+  title: {
+    width: "100%", 
+    flexDirection: "row", 
+    justifyContent: "space-between"
+  }
+})

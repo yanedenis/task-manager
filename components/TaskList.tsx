@@ -1,23 +1,25 @@
-import { todoTaskType } from '@/types/TodoTaskType'
 import React, { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { IconButton, Text, TouchableRipple } from 'react-native-paper'
+import { Button, IconButton, Menu, Text, TouchableRipple } from 'react-native-paper'
 import TaskDialog from './TaskDialog'
+import { TodoTaskType } from '@/types/TodoTaskType'
+import { colors } from '@/constants/colors'
 
 type Props = {
-  todoList: todoTaskType[],
+  todoList: TodoTaskType[],
   deleteTask: (taskId: number) => void,
+  changeTaskStatus: (taskId: number, status: 'In Progress' | 'Completed' | 'Cancelled') => void;
 }
 
-export default function TaskList({ todoList, deleteTask }: Props) {
+export default function TaskList({ todoList, deleteTask, changeTaskStatus }: Props) {
   const [dialogState, setDialogState] = useState<boolean>(false);
-  const [selectedTask, setSelectedTask] = useState<todoTaskType | null>(null);
+  const [selectedTask, setSelectedTask] = useState<TodoTaskType | null>(null);
+  const [statusMenuTaskId, setStatusMenuTaskId] = useState<number | null>(null);
 
-  const openTask = (task: todoTaskType) => {
+  const openTask = (task: TodoTaskType) => {
     setDialogState(true)
     setSelectedTask(task)
   }
-
   const closeTask = () => {
     setDialogState(false)
   }
@@ -29,8 +31,39 @@ export default function TaskList({ todoList, deleteTask }: Props) {
           <View style={styles.task}>
             <Text variant='titleLarge'>{task.title}</Text>
             <View style={styles.taskInfo}>
-              <Text variant='titleLarge'>{task.status}</Text>
-              <Text variant='titleLarge'>{task.date}</Text>
+              <Menu
+                visible={statusMenuTaskId === task.id}
+                onDismiss={() => setStatusMenuTaskId(null)}
+                anchor={
+                  <Button onPress={() => setStatusMenuTaskId(task.id)}>
+                    {task.status}
+                  </Button>
+                }
+                anchorPosition='bottom'
+              >
+                <Menu.Item
+                  onPress={() => {
+                    changeTaskStatus(task.id, "In Progress");
+                    setStatusMenuTaskId(null);
+                  }}
+                  title="In Progress"
+                />
+                <Menu.Item
+                  onPress={() => {
+                    changeTaskStatus(task.id, "Completed");
+                    setStatusMenuTaskId(null);
+                  }}
+                  title="Completed"
+                />
+                <Menu.Item
+                  onPress={() => {
+                    changeTaskStatus(task.id, "Cancelled");
+                    setStatusMenuTaskId(null);
+                  }}
+                  title="Cancelled"
+                />
+              </Menu>
+              <Text variant='titleMedium'>{task.date}</Text>
               <IconButton icon="trash-can-outline" onPress={() => deleteTask(task.id)} />
             </View>
           </View>
@@ -47,14 +80,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "white",
-    padding: 10,
-    marginBottom: 16,
+    backgroundColor: colors.backgroundLightened,
+    paddingInline: 10,
+    marginBottom: 10,
     borderRadius: 6,
     borderWidth: 1,
   },
   taskInfo: {
-    flexDirection: "row", 
+    flexDirection: "row",
     gap: 12,
     alignItems: "center",
   }
